@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CanteenPlus - E-Commerce</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        accent: {
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for Drawer & Grid */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+        }
+
+        .badge-bounce {
+            animation: bounce 0.3s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.25); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- TOP ANNOUNCEMENT BAR -->
+    <div class="bg-slate-900 text-white text-xs sm:text-sm py-2 px-4 text-center font-medium flex justify-between items-center transition-all duration-300">
+        <div class="hidden sm:flex items-center gap-2 text-slate-400">
+            <i class="fa-solid fa-truck-fast text-brand-500"></i>
+            <span>Fast South Africa Door-to-Door Shipping</span>
+        </div>
+        <div class="mx-auto sm:mx-0 flex items-center gap-2">
+            <span class="bg-amber-500/20 text-amber-300 text-xs px-2 py-0.5 rounded-full font-semibold border border-amber-500/30">SPECIAL</span>
+            <span>Free Delivery on orders over <b>R1,000</b>!</span>
+        </div>
+        <!-- ADMIN LOGIN 
+        <div class="hidden sm:flex items-center gap-4 text-xs text-slate-400">
+            <button onclick="openAdminLoginModal()" class="hover:text-amber-400 font-semibold transition flex items-center gap-1.5 text-xs text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">
+                <i class="fa-solid fa-lock text-amber-400">
+                </i>
+                <button/> 
+            <span>|</span>
+            <span>ZAR (R)</span>
+        <div/>    -->
+        </div>
+    </div>
+
+    <!-- MAIN HEADER -->
+    <header class="sticky top-0 z-30 glass-header border-b border-slate-200/80 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+
+                <!-- LOGO -->
+                <a href="#" class="flex items-center gap-3 group shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-shop"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">Canteen<span class="text-brand-600">Plus</span></span>
+                        <span class="block text-[10px] text-slate-500 font-semibold uppercase tracking-widest -mt-1">Quality Retail & Essentials</span>
+                    </div>
+                </a>
+
+                <!-- DYNAMIC SEARCH BAR -->
+                <div class="hidden md:flex flex-1 max-w-lg relative">
+                    <div class="relative w-full">
+                        <input type="text" id="searchInput" placeholder="Search appliances, homeware, decor, accessories..." 
+                            class="w-full pl-10 pr-10 py-2.5 bg-slate-100 hover:bg-slate-100/80 focus:bg-white border border-slate-200 focus:border-brand-500 rounded-full text-sm transition-all focus:ring-2 focus:ring-brand-500/20 outline-none">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                        <button id="clearSearch" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <!-- Mobile Search Trigger -->
+                    <button id="mobileSearchBtn" onclick="toggleMobileSearch()" class="md:hidden p-2.5 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-full transition">
+                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    </button>
+
+                    <!-- Mobile Admin Login Trigger -->
+                    <button onclick="openAdminLoginModal()" class="sm:hidden p-2.5 text-slate-600 hover:text-amber-600 hover:bg-slate-100 rounded-full transition" title="Admin Portal">
+                        <i class="fa-solid fa-user-shield text-lg"></i>
+                    </button>
+
+                    <!-- Wishlist Button -->
+                    <button id="wishlistBtn" class="relative p-2.5 text-slate-700 hover:text-rose-600 hover:bg-slate-100 rounded-full transition" title="View Wishlist">
+                        <i class="fa-regular fa-heart text-xl"></i>
+                        <span id="wishlistBadge" class="hidden absolute top-1 right-1 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                    </button>
+
+                    <!-- Cart Button -->
+                    <button id="cartBtn" onclick="toggleCartDrawer(true)" class="relative flex items-center gap-2.5 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2.5 rounded-full font-semibold text-sm shadow-md shadow-brand-500/20 hover:shadow-lg transition">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="hidden sm:inline">Cart</span>
+                        <span id="cartCountBadge" class="bg-white text-brand-700 text-xs font-bold px-2 py-0.5 rounded-full border border-brand-200">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- MOBILE SEARCH EXPANDED -->
+            <div id="mobileSearchBar" class="hidden md:hidden pb-4 pt-1">
+                <div class="relative">
+                    <input type="text" id="mobileSearchInput" placeholder="Search products..." 
+                        class="w-full pl-10 pr-10 py-2.5 bg-slate-100 border border-slate-200 focus:border-brand-500 rounded-full text-sm outline-none">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                </div>
+            </div>
+
+            <!-- CATEGORY NAVIGATION TABS -->
+            <nav class="flex items-center gap-2 overflow-x-auto py-2 border-t border-slate-100 scrollbar-none text-xs sm:text-sm font-medium">
+                <button onclick="filterCategory('all')" class="category-btn px-4 py-1.5 rounded-full bg-brand-600 text-white whitespace-nowrap transition" data-cat="all">
+                    <i class="fa-solid fa-border-all mr-1.5"></i> All Products
+                </button>
+                <button onclick="filterCategory('appliances')" class="category-btn px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 whitespace-nowrap transition" data-cat="appliances">
+                    <i class="fa-solid fa-plug mr-1.5 text-brand-600"></i> Appliances & Kettles
+                </button>
+                <button onclick="filterCategory('cleaning')" class="category-btn px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 whitespace-nowrap transition" data-cat="cleaning">
+                    <i class="fa-solid fa-broom mr-1.5 text-brand-600"></i> Cleaning & Homeware
+                </button>
+                <button onclick="filterCategory('magnetic')" class="category-btn px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 whitespace-nowrap transition" data-cat="magnetic">
+                    <i class="fa-solid fa-magnet mr-1.5 text-brand-600"></i> House plants and Clocks
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO BANNER -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div class="relative rounded-3xl overflow-hidden bg-slate-900 text-white shadow-xl min-h-[300px] sm:min-h-[340px] flex items-center">
+            <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1600&q=80" 
+                 alt="CanteenPlus Products" 
+                 class="absolute inset-0 w-full h-full object-cover object-center opacity-30 mix-blend-luminosity">
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-transparent"></div>
+
+            <div class="relative z-10 p-6 sm:p-12 lg:p-16 max-w-2xl">
+                <span class="inline-flex items-center gap-2 bg-brand-500/20 text-brand-300 border border-brand-400/30 text-xs font-semibold px-3 py-1 rounded-full mb-4">
+                    <i class="fa-solid fa-shield-check text-emerald-400"></i> Verified RSA Store Catalog
+                </span>
+                <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight text-white mb-4">
+                    Everyday Home Use <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-amber-300">Retail Deals.</span>
+                </h1>
+                <p class="text-slate-300 text-xs sm:text-base mb-6 leading-relaxed">
+                    Browse top quality appliances, home cleaning accessories, kettles, heaters, and Home decore with direct SA checkout.
+                </p>
+                <div class="flex flex-wrap gap-3 items-center">
+                    <a href="#catalog" class="bg-brand-600 hover:bg-brand-500 text-white px-6 py-3 rounded-full font-bold text-xs sm:text-sm transition-all shadow-lg shadow-brand-600/30 flex items-center gap-2">
+                        Shop Catalog <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CATALOG & FILTER SECTION -->
+    <main id="catalog" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1">
+        
+        <!-- TOOLBAR -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight" id="categoryTitle">All Store Products</h2>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1" id="productCountLabel">Showing all products</p>
+            </div>
+
+            <!-- SORT CONTROLS -->
+            <div class="flex items-center gap-3">
+                <label for="sortSelect" class="text-xs font-semibold text-slate-500 uppercase tracking-wider shrink-0">Sort By:</label>
+                <select id="sortSelect" onchange="sortProducts()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-brand-500 outline-none shadow-sm cursor-pointer">
+                    <option value="popular">Featured</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="qty">In Stock Quantity</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- PRODUCT GRID CONTAINER -->
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Dynamic product cards rendered by JS -->
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div id="noResults" class="hidden text-center py-16 bg-white rounded-3xl border border-dashed border-slate-300 my-8">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-2xl">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">No matching products found</h3>
+            <p class="text-slate-500 text-sm mt-1 max-w-sm mx-auto">Try adjusting your search terms or filter settings.</p>
+            <button onclick="resetFilters()" class="mt-4 px-5 py-2 bg-brand-600 text-white font-semibold text-sm rounded-full hover:bg-brand-700 transition">
+                Reset Filters
+            </button>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer id="support" class="bg-slate-900 text-slate-400 text-sm pt-12 pb-8 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 border-b border-slate-800">
+                <div class="lg:col-span-2">
+                    <a href="#" class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center font-black text-lg">
+                            <i class="fa-solid fa-shop"></i>
+                        </div>
+                        <span class="text-xl font-extrabold text-white">Canteen<span class="text-brand-500">Plus</span></span>
+                    </a>
+                    <p class="text-slate-400 text-xs leading-relaxed max-w-sm mb-4">
+                        South Africa's trusted retail supplier for home appliances, cleaning accessories, and home decor.
+                    </p>
+                    <button onclick="openAdminLoginModal()" class="inline-flex items-center gap-2 text-xs text-amber-400 bg-amber-400/10 hover:bg-amber-400/20 px-3 py-1.5 rounded-lg border border-amber-400/30 transition">
+                        <i class="fa-solid fa-user-shield"></i> Dashboard
+                    </button>
+                </div>
+                <div>
+                    <h5 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Customer Service</h5>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="#" class="hover:text-white transition">RSA Delivery Terms</a></li>
+                        <li><a href="#" class="hover:text-white transition">Returns & Warranties</a></li>
+                        <li><a href="#" class="hover:text-white transition">Payment Options</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Contact SA</h5>
+                    <ul class="space-y-2 text-xs">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-phone text-brand-500"></i> +27 (0) 79 527 5086</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-envelope text-brand-500"></i> sales@canteenplus.co.za</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brand-500"></i> Johannesburg, South Africa</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>&copy; 2026 CanteenPlus e-commerce SA. All Rights Reserved.</p>
+                <div class="flex items-center gap-3 text-lg text-slate-400">
+                    <i class="fa-brands fa-cc-visa"></i>
+                    <i class="fa-brands fa-cc-mastercard"></i>
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SHOPPING CART SLIDE-OUT DRAWER -->
+    <div id="cartDrawerBackdrop" onclick="toggleCartDrawer(false)" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0"></div>
+    
+    <aside id="cartDrawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white z-50 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out">
+        <!-- Cart Header -->
+        <div class="p-4 sm:p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-brand-600 text-xl"></i>
+                <h3 class="font-bold text-slate-900 text-lg">Your Cart</h3>
+                <span id="cartDrawerBadge" class="bg-brand-100 text-brand-700 font-bold text-xs px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <button onclick="toggleCartDrawer(false)" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-full transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Shipping Progress -->
+        <div class="bg-brand-50 p-3 px-6 border-b border-brand-100 text-xs">
+            <div class="flex justify-between font-semibold text-brand-900 mb-1">
+                <span id="shippingProgressText">Add R1,000 for Free Delivery</span>
+                <span id="shippingProgressPercent">0%</span>
+            </div>
+            <div class="w-full bg-brand-200 rounded-full h-2 overflow-hidden">
+                <div id="shippingProgressBar" class="bg-brand-600 h-full w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+
+        <!-- Cart Items Container -->
+        <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+            <!-- JS Populated -->
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="p-4 sm:p-6 border-t border-slate-200 bg-slate-50 space-y-3">
+            <div class="flex justify-between text-sm text-slate-600">
+                <span>Subtotal</span>
+                <span id="cartSubtotal" class="font-semibold text-slate-800">R 0.00</span>
+            </div>
+            <div class="flex justify-between text-sm text-slate-600">
+                <span>Shipping (RSA Door)</span>
+                <span id="cartShippingCost" class="font-semibold text-slate-800">R 120.00</span>
+            </div>
+            <div class="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t border-slate-200">
+                <span>Total Amount</span>
+                <span id="cartTotal" class="text-brand-600 text-xl">R 0.00</span>
+            </div>
+
+            <button onclick="startCheckout()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-brand-500/25 transition flex items-center justify-center gap-2 text-sm mt-2">
+                <i class="fa-solid fa-truck-ramp-box"></i> Proceed to Checkout
+            </button>
+        </div>
+    </aside>
+
+    <!-- CHECKOUT CUSTOMER DETAILS MODAL -->
+    <div id="checkoutModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div onclick="closeCheckoutModal()" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto z-10 shadow-2xl p-6 sm:p-8 fade-in">
+            <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-lg">
+                    <i class="fa-solid fa-address-card"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-extrabold text-slate-900">Customer Details & RSA Shipping</h3>
+                    <p class="text-xs text-slate-500">Please complete your information for delivery confirmation</p>
+                </div>
+            </div>
+
+            <form id="checkoutForm" onsubmit="handleProceedToConfirmation(event)" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">First Name *</label>
+                        <input type="text" id="custFirstName" required placeholder="e.g. Thabo" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Surname *</label>
+                        <input type="text" id="custSurname" required placeholder="e.g. Mokoena" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Contact Details (RSA +27 Number) *</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-2.5 text-slate-400 font-semibold text-sm">🇿🇦</span>
+                        <input type="text" id="custPhone" required placeholder="+27 82 123 4567 or 0821234567" class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Must be a valid South African phone format (+27... or 0...)</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Street Address *</label>
+                    <input type="text" id="custAddress" required placeholder="e.g. 142 Sandton Drive, Suite 4B" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="sm:col-span-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Suburb / City *</label>
+                        <input type="text" id="custCity" required placeholder="e.g. Johannesburg" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                    </div>
+                    <div class="sm:col-span-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Postal Code *</label>
+                        <input type="text" id="custPostalCode" required placeholder="e.g. 2196" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                    </div>
+                    <div class="sm:col-span-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Province *</label>
+                        <select id="custProvince" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                            <option value="">Select...</option>
+                            <option value="Gauteng">Gauteng</option>
+                            <option value="Western Cape">Western Cape</option>
+                            <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                            <option value="Eastern Cape">Eastern Cape</option>
+                            <option value="Free State">Free State</option>
+                            <option value="Mpumalanga">Mpumalanga</option>
+                            <option value="Limpopo">Limpopo</option>
+                            <option value="North West">North West</option>
+                            <option value="Northern Cape">Northern Cape</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Order Summary Mini Card -->
+                <div class="bg-slate-100 p-4 rounded-2xl border border-slate-200 mt-4">
+                    <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                        <span>Cart Items:</span>
+                        <span id="checkoutSummaryItemsCount">0 items</span>
+                    </div>
+                    <div class="flex justify-between text-sm font-extrabold text-slate-900 pt-1 border-t border-slate-200">
+                        <span>Total Payable (Incl. Shipping):</span>
+                        <span id="checkoutSummaryTotal" class="text-brand-600">R 0.00</span>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex items-center gap-3">
+                    <button type="button" onclick="closeCheckoutModal()" class="w-1/3 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm transition">
+                        Back
+                    </button>
+                    <button type="submit" class="w-2/3 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2">
+                        Proceed to Review <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ORDER CONFIRMATION / FINAL RECEIPT MODAL -->
+    <div id="orderReceiptModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 z-10 shadow-2xl fade-in text-center">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="text-2xl font-extrabold text-slate-900">Order Confirmed!</h3>
+            <p class="text-xs text-slate-500 mt-1">Thank you for your purchase with CanteenPlus.</p>
+
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 my-5 text-left text-xs space-y-2">
+                <div class="flex justify-between border-b border-slate-200 pb-2">
+                    <span class="text-slate-500">Order Reference:</span>
+                    <span id="receiptRef" class="font-bold text-slate-900">#CP-98231</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Customer Name:</span>
+                    <span id="receiptName" class="font-semibold text-slate-800">--</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Contact Number:</span>
+                    <span id="receiptPhone" class="font-semibold text-slate-800">--</span>
+                </div>
+                <div>
+                    <span class="text-slate-500">Shipping Address:</span>
+                    <div id="receiptAddress" class="font-semibold text-slate-800 mt-0.5">--</div>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-slate-200 text-sm font-extrabold">
+                    <span class="text-slate-900">Total Paid:</span>
+                    <span id="receiptTotal" class="text-brand-600">R 0.00</span>
+                </div>
+            </div>
+
+            <button onclick="finaliseOrderCompletion()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-sm transition">
+                Return to Shop
+            </button>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div onclick="closeAdminLoginModal()" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl max-w-sm w-full p-6 sm:p-8 z-10 shadow-2xl fade-in">
+            <button onclick="closeAdminLoginModal()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-3 text-xl font-bold">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="text-xl font-extrabold text-slate-900">Admin Portal Login</h3>
+                <p class="text-xs text-slate-500 mt-1">Authorized access to store management</p>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Login Name</label>
+                    <input type="text" id="adminUser" required placeholder="•••••" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password</label>
+                    <input type="password" id="adminPass" required placeholder="••••••••••" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-amber-500 outline-none">
+                </div>
+
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-key text-amber-400"></i> Login to Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD FULL MODAL / VIEW -->
+    <div id="adminDashboardModal" class="fixed inset-0 z-50 hidden bg-slate-100 flex flex-col overflow-hidden">
+        <!-- Admin Top Navigation Bar -->
+        <header class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-500 text-slate-900 flex items-center justify-center font-bold text-lg">
+                    <i class="fa-solid fa-sliders"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-extrabold">CanteenPlus /Admin_Dashboard</h2>
+                    <p class="text-xs text-slate-400">Manage Product Catalog & Retail Inventory</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="openProductFormModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-md">
+                    <i class="fa-solid fa-plus"></i> Add New Product
+                </button>
+                <button onclick="closeAdminDashboard()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-xs transition">
+                    Exit Admin
+                </button>
+            </div>
+        </header>
+
+        <!-- Admin Main Content Area -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+            
+            <!-- Dashboard Quick Stats Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-slate-400 uppercase">Total Products</div>
+                        <div id="adminStatTotal" class="text-2xl font-black text-slate-900 mt-1">0</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-slate-400 uppercase">Total Inventory Items</div>
+                        <div id="adminStatQty" class="text-2xl font-black text-slate-900 mt-1">0</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-warehouse"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-slate-400 uppercase">Catalog Retail Value</div>
+                        <div id="adminStatValue" class="text-2xl font-black text-slate-900 mt-1">R 0.00</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Table Section -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                    <h3 class="font-bold text-slate-900 text-base">Store Products Inventory (ProducTList.xlsx)</h3>
+                    <div class="text-xs text-slate-500">Logged in as: <span class="font-bold text-slate-800">Admin001</span></div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 text-xs text-slate-500 uppercase font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="px-5 py-3.5">Product Name</th>
+                                <th class="px-5 py-3.5">Category</th>
+                                <th class="px-5 py-3.5">Retail Price</th>
+                                <th class="px-5 py-3.5">Quantity</th>
+                                <th class="px-5 py-3.5 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminProductTableBody" class="divide-y divide-slate-100">
+                            <!-- JS Populated Table Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN ADD / EDIT PRODUCT FORM MODAL -->
+    <div id="productFormModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div onclick="closeProductFormModal()" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 z-10 shadow-2xl fade-in">
+            <button onclick="closeProductFormModal()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 id="productFormTitle" class="text-xl font-extrabold text-slate-900 mb-4">Add Product</h3>
+
+            <form id="productForm" onsubmit="handleSaveProduct(event)" class="space-y-4">
+                <input type="hidden" id="editProductId">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Product Name *</label>
+                    <input type="text" id="formProdName" required placeholder="e.g. Golden Fan Heater" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Retail Price (ZAR) *</label>
+                        <input type="number" min="0" step="0.01" id="formProdPrice" required placeholder="379.90" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Quantity Stock *</label>
+                        <input type="number" min="0" step="1" id="formProdQty" required placeholder="15" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Category *</label>
+                    <select id="formProdCategory" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                        <option value="appliances">Appliances & Kitchenware</option>
+                        <option value="cleaning">Cleaning & Homeware</option>
+                        <option value="magnetic">House plants and Clocks</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="formProdImageFile" class="block text-xs font-bold text-slate-700 uppercase mb-1">Product Image</label>
+                    <input type="file" id="formProdImageFile" accept="image/jpeg,image/png,image/webp,image/gif" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none">
+                    <p class="text-xs text-slate-500 mt-1">Choose an image from your computer (JPG, PNG, WebP, or GIF; up to 2 MB). Uploads are saved in this browser.</p>
+                    <img id="formProdImagePreview" alt="Selected product image preview" class="hidden mt-3 w-24 h-24 object-cover rounded-xl border border-slate-200">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Description</label>
+                    <textarea id="formProdDesc" rows="3" placeholder="Enter product specifications and details..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-brand-500 outline-none"></textarea>
+                </div>
+
+                <div class="pt-2 flex gap-3">
+                    <button type="button" onclick="closeProductFormModal()" class="w-1/3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm transition">Cancel</button>
+                    <button type="submit" class="w-2/3 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm transition shadow-md">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- QUICK VIEW MODAL -->
+    <div id="quickViewModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div onclick="closeQuickView()" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto z-10 shadow-2xl p-6 sm:p-8 fade-in">
+            <button onclick="closeQuickView()" class="absolute top-4 right-4 w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="quickViewContent" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINERS -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- APPLICATION LOGIC JS -->
+    <script>
+        // Default Excel ProducTList items + Core catalog
+        const defaultProducts = [
+            {
+                id: 1,
+                name: "Golden Fan Heater",
+                category: "appliances",
+                price: 379.90,
+                originalPrice: 450.00,
+                quantity: 15,
+                rating: 4.8,
+                reviews: 24,
+                badge: "EXCEL ITEM",
+                badgeColor: "bg-amber-500",
+                image: "IMGs_Products/GFH_.jpg",
+                description: "Compact 2000W oscillation fan heater with dual heat settings and tip-over safety switch protection.",
+                specs: ["2000W Power", "Adjustable Thermostat", "Overheat Protection"]
+            },
+            {
+                id: 2,
+                name: "Golden Air 2.5l Gas/in Kettle",
+                category: "appliances",
+                price: 349.90,
+                originalPrice: 399.00,
+                quantity: 20,
+                rating: 4.9,
+                reviews: 18,
+                badge: "EXCEL ITEM",
+                badgeColor: "bg-amber-500",
+                image: "IMGs_Products/GGIK_.jpg",
+                description: "2.5 Litre stainless steel stovetop whistling kettle with heat-resistant ergonomic handle.",
+                specs: ["2.5L Capacity", "Stainless Steel Body", "Whistling Spout"]
+            },
+            {
+                id: 3,
+                name: "Sunbeam Cordless Kettle",
+                category: "appliances",
+                price: 299.90,
+                originalPrice: 350.00,
+                quantity: 12,
+                rating: 4.7,
+                reviews: 35,
+                badge: "EXCEL ITEM",
+                badgeColor: "bg-amber-500",
+                image: "IMGs_Products/SunbKW_.png",
+                description: "Rapid boiling 1.7L cordless electric kettle featuring automatic shut-off and water level indicator.",
+                specs: ["1.7L Capacity", "360-Degree Base", "Auto Shut-off"]
+            },
+            {
+                id: 4,
+                name: "Enzo toilet Brush",
+                category: "cleaning",
+                price: 179.90,
+                originalPrice: 220.00,
+                quantity: 30,
+                rating: 4.6,
+                reviews: 14,
+                badge: "EXCEL ITEM",
+                badgeColor: "bg-amber-500",
+                image: "IMGs_Products/TBrush_.jpg",
+                description: "Durable stainless steel holder with silicone deep-cleaning bristles.",
+                specs: ["Silicone Bristles", "Stainless Steel Stand", "Rust Resistant"]
+            },
+            {
+                id: 5,
+                name: "Dustpan N Brush",
+                category: "cleaning",
+                price: 119.90,
+                originalPrice: 149.00,
+                quantity: 25,
+                rating: 4.5,
+                reviews: 29,
+                badge: "EXCEL ITEM",
+                badgeColor: "bg-amber-500",
+                image: "IMGs_Products/DustB_.jpg",
+                description: "Heavy-duty rubber-lipped dustpan set with ergonomic click-in handle grip.",
+                specs: ["Rubber Seal Edge", "High Density Bristles", "Easy Storage Lock"]
+            },
+            {
+                id: 101,
+                name: "COLANDER 285MM",
+                category: "magnetic",
+                price: 150.00,
+                originalPrice: 140.00,
+                quantity: 8,
+                rating: 4.9,
+                reviews: 42,
+                badge: "BEST SELLER",
+                badgeColor: "bg-brand-600",
+                image: "IMGs_Products/4.COL5_.jpg",
+                description: "High-grade dry-erase magnetic whiteboard surrounded by anodized aluminum frame.",
+                specs: ["Size: 1200 x 900mm", "Includes pen tray", "Non-ghosting surface"]
+            }
+        ];
+
+        const legacyProductImagePaths = {
+            'IMGs_Products/GoldenFanHeater_.jpg': 'IMGs_Products/GFH_.jpg',
+            'IMGs_Products/SunbeamKettle_.jpg': 'IMGs_Products/SunbKW_.png',
+            'IMGs_Products/Dustpan_.jpg': 'IMGs_Products/DustB_.jpg'
+        };
+
+        // Persistent State initialization
+        let products = loadProductsFromStorage();
+        const kettle = products.find(product => product.id === 2);
+        if (kettle && kettle.image === 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f6?auto=format&fit=crop&w=800&q=80') {
+            kettle.image = 'IMGs_Products/GGIK_.jpg';
+        }
+        let cart = [];
+        let wishlist = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+        let pendingCheckoutCustomer = null;
+        let selectedProductImage = null;
+        let productImagePreviewUrl = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            saveProductsToStorage();
+            renderProducts();
+            setupSearchListeners();
+            updateCartUI();
+        });
+
+        function saveProductsToStorage() {
+            localStorage.setItem('cp_products', JSON.stringify(products));
+        }
+
+        function loadProductsFromStorage() {
+            try {
+                const storedProducts = JSON.parse(localStorage.getItem('cp_products'));
+                if (!Array.isArray(storedProducts)) return defaultProducts;
+
+                return storedProducts
+                    .filter(product => product && Number.isFinite(Number(product.id)) &&
+                        typeof product.name === 'string' && Number.isFinite(Number(product.price)) &&
+                        Number.isFinite(Number(product.quantity)))
+                    .map(product => ({
+                        ...product,
+                        id: Number(product.id),
+                        price: Number(product.price),
+                        quantity: Number(product.quantity),
+                        image: legacyProductImagePaths[product.image] || product.image,
+                        category: product.category === 'Decor' ? 'magnetic' : (product.category || 'appliances')
+                    }));
+            } catch {
+                return defaultProducts;
+            }
+        }
+
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
+        function safeImageUrl(value) {
+            const fallback = 'https://placehold.co/600x600/e2e8f0/475569?text=CanteenPlus';
+            if (typeof value !== 'string' || !value.trim()) return fallback;
+            try {
+                const imagePath = value.trim();
+                if (/^data:image\/(?:jpeg|png|gif|webp);base64,/i.test(imagePath)) return imagePath;
+                const isRelative = !/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(imagePath) && !imagePath.startsWith('//');
+                const url = new URL(imagePath, window.location.href);
+                const isWebUrl = ['http:', 'https:'].includes(url.protocol);
+                const isLocalFile = isRelative && url.protocol === 'file:' && window.location.protocol === 'file:';
+                return isWebUrl || isLocalFile ? url.href : fallback;
+            } catch {
+                return fallback;
+            }
+        }
+
+        // --- RENDER PRODUCTS CATALOG ---
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            const noResults = document.getElementById('noResults');
+            const countLabel = document.getElementById('productCountLabel');
+
+            let filtered = products.filter(p => {
+                const matchesCat = (currentCategory === 'all' || p.category === currentCategory);
+                const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                      String(p.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCat && matchesSearch;
+            });
+
+            countLabel.textContent = `Showing ${filtered.length} of ${products.length} items`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            grid.innerHTML = filtered.map(product => {
+                const isWishlisted = wishlist.includes(product.id);
+                return `
+                <div class="group bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
+                    <div class="relative overflow-hidden bg-slate-100 aspect-square">
+                        <img src="${escapeHTML(safeImageUrl(product.image))}" alt="${escapeHTML(product.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        
+                        ${product.badge ? `<span class="absolute top-3 left-3 ${['bg-amber-500', 'bg-brand-600', 'bg-emerald-500'].includes(product.badgeColor) ? product.badgeColor : 'bg-brand-600'} text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">${escapeHTML(product.badge)}</span>` : ''}
+
+                        <div class="absolute top-3 right-3 flex flex-col gap-2">
+                            <button onclick="toggleWishlist(${product.id})" class="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-slate-700 hover:text-rose-600 shadow-md flex items-center justify-center transition">
+                                <i class="${isWishlisted ? 'fa-solid text-rose-500' : 'fa-regular'} fa-heart text-xs"></i>
+                            </button>
+                            <button onclick="openQuickView(${product.id})" class="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-slate-700 hover:text-brand-600 shadow-md flex items-center justify-center transition" title="Quick View">
+                                <i class="fa-regular fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-amber-500 mb-1.5">
+                                <div class="flex items-center gap-1">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span class="font-bold text-slate-700 text-xs">${Number(product.rating) || 4.8}</span>
+                                </div>
+                                <span class="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Stock: ${Number(product.quantity)}</span>
+                            </div>
+
+                            <h3 onclick="openQuickView(${product.id})" class="font-bold text-slate-900 text-sm leading-snug line-clamp-2 hover:text-brand-600 cursor-pointer transition mb-2">
+                                ${escapeHTML(product.name)}
+                            </h3>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                            <div>
+                                ${product.originalPrice ? `<div class="text-[11px] text-slate-400 line-through">R ${Number(product.originalPrice).toFixed(2)}</div>` : ''}
+                                <div class="text-base font-black text-slate-900">R ${Number(product.price).toFixed(2)}</div>
+                            </div>
+                            
+                            <button onclick="addToCart(${product.id})" class="bg-slate-900 hover:bg-brand-600 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-cart-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // --- FILTER & SEARCH ---
+        function filterCategory(cat) {
+            currentCategory = cat;
+            const categoryTitles = {
+                all: 'All Store Products',
+                appliances: 'Appliances & Kettles',
+                cleaning: 'Cleaning & Homeware',
+                magnetic: 'House Plants and Clocks'
+            };
+            document.getElementById('categoryTitle').textContent = categoryTitles[cat] || 'All Store Products';
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if(btn.dataset.cat === cat) {
+                    btn.classList.remove('bg-slate-100', 'text-slate-700');
+                    btn.classList.add('bg-brand-600', 'text-white');
+                } else {
+                    btn.classList.remove('bg-brand-600', 'text-white');
+                    btn.classList.add('bg-slate-100', 'text-slate-700');
+                }
+            });
+            renderProducts();
+        }
+
+        function sortProducts() {
+            const val = document.getElementById('sortSelect').value;
+            if (val === 'price-low') products.sort((a,b) => a.price - b.price);
+            else if (val === 'price-high') products.sort((a,b) => b.price - a.price);
+            else if (val === 'qty') products.sort((a,b) => b.quantity - a.quantity);
+            else products.sort((a,b) => a.id - b.id);
+            renderProducts();
+        }
+
+        function setupSearchListeners() {
+            const input = document.getElementById('searchInput');
+            const mobInput = document.getElementById('mobileSearchInput');
+            const clearBtn = document.getElementById('clearSearch');
+
+            const handleSearch = (e) => {
+                searchQuery = e.target.value.trim();
+                clearBtn.classList.toggle('hidden', searchQuery === '');
+                renderProducts();
+            };
+
+            if (input) input.addEventListener('input', handleSearch);
+            if (mobInput) mobInput.addEventListener('input', handleSearch);
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    input.value = '';
+                    if(mobInput) mobInput.value = '';
+                    searchQuery = '';
+                    clearBtn.classList.add('hidden');
+                    renderProducts();
+                });
+            }
+        }
+
+        function toggleMobileSearch() {
+            const bar = document.getElementById('mobileSearchBar');
+            bar.classList.toggle('hidden');
+        }
+
+        function resetFilters() {
+            searchQuery = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('mobileSearchInput').value = '';
+            document.getElementById('clearSearch').classList.add('hidden');
+            filterCategory('all');
+        }
+
+        // --- CART SYSTEM ---
+        function addToCart(productId) {
+            const item = products.find(p => p.id === productId);
+            if (!item) return;
+
+            if (item.quantity <= 0) {
+                showToast('Item currently out of stock!', 'warning');
+                return;
+            }
+
+            const existing = cart.find(c => c.id === productId);
+            if (existing) {
+                if (existing.quantity + 1 > item.quantity) {
+                    showToast(`Only ${item.quantity} units available in stock`, 'warning');
+                    return;
+                }
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...item, quantity: 1 });
+            }
+
+            updateCartUI();
+            showToast(`Added "${item.name}" to cart`, 'success');
+        }
+
+        function updateCartQuantity(productId, change) {
+            const cItem = cart.find(i => i.id === productId);
+            const pItem = products.find(p => p.id === productId);
+            if (!cItem) return;
+
+            if (change > 0 && cItem.quantity + 1 > pItem.quantity) {
+                showToast(`Maximum stock quantity reached (${pItem.quantity})`, 'warning');
+                return;
+            }
+
+            cItem.quantity += change;
+            if (cItem.quantity <= 0) {
+                cart = cart.filter(i => i.id !== productId);
+            }
+            updateCartUI();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(i => i.id !== productId);
+            updateCartUI();
+            showToast('Item removed', 'info');
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItemsContainer');
+            const totalCount = cart.reduce((sum, i) => sum + i.quantity, 0);
+            const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+            document.getElementById('cartCountBadge').textContent = totalCount;
+            document.getElementById('cartDrawerBadge').textContent = totalCount;
+
+            const freeThreshold = 1000;
+            const progress = Math.min(100, (subtotal / freeThreshold) * 100);
+            document.getElementById('shippingProgressBar').style.width = `${progress}%`;
+            document.getElementById('shippingProgressPercent').textContent = `${Math.round(progress)}%`;
+
+            const shippingCost = (subtotal >= freeThreshold || subtotal === 0) ? 0 : 120;
+            document.getElementById('cartShippingCost').textContent = shippingCost === 0 ? 'FREE' : `R ${shippingCost.toFixed(2)}`;
+            document.getElementById('cartSubtotal').textContent = `R ${subtotal.toFixed(2)}`;
+            document.getElementById('cartTotal').textContent = `R ${(subtotal + shippingCost).toFixed(2)}`;
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-slate-400">
+                        <i class="fa-solid fa-basket-shopping text-4xl mb-2"></i>
+                        <p class="font-medium text-slate-600">Your cart is empty</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200/80 rounded-2xl">
+                    <img src="${escapeHTML(safeImageUrl(item.image))}" alt="${escapeHTML(item.name)}" class="w-14 h-14 object-cover rounded-xl bg-white border border-slate-200">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-xs text-slate-800 truncate">${escapeHTML(item.name)}</h4>
+                        <div class="text-xs text-slate-500 mt-0.5">R ${Number(item.price).toFixed(2)}</div>
+                        <div class="flex items-center gap-2 mt-1.5">
+                            <div class="flex items-center bg-white border border-slate-200 rounded-lg">
+                                <button onclick="updateCartQuantity(${item.id}, -1)" class="w-5 h-5 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-l">-</button>
+                                <span class="px-2 text-xs font-bold text-slate-800">${item.quantity}</span>
+                                <button onclick="updateCartQuantity(${item.id}, 1)" class="w-5 h-5 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-r">+</button>
+                            </div>
+                            <button onclick="removeFromCart(${item.id})" class="text-slate-400 hover:text-rose-500 text-xs">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-right font-extrabold text-xs text-slate-900 shrink-0">
+                        R ${(item.price * item.quantity).toFixed(2)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleCartDrawer(open) {
+            const drawer = document.getElementById('cartDrawer');
+            const backdrop = document.getElementById('cartDrawerBackdrop');
+            if (open) {
+                backdrop.classList.remove('hidden');
+                setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+                drawer.classList.remove('translate-x-full');
+            } else {
+                drawer.classList.add('translate-x-full');
+                backdrop.classList.add('opacity-0');
+                setTimeout(() => backdrop.classList.add('hidden'), 300);
+            }
+        }
+
+        // --- CHECKOUT & RSA DETAILS VALIDATION ---
+        function startCheckout() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty!', 'warning');
+                return;
+            }
+            if (!cartHasAvailableStock()) return;
+            cart = cart.map(cartItem => ({
+                ...products.find(product => product.id === cartItem.id),
+                quantity: cartItem.quantity
+            }));
+            updateCartUI();
+            toggleCartDrawer(false);
+
+            const totalCount = cart.reduce((sum, i) => sum + i.quantity, 0);
+            const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+            const shipping = subtotal >= 1000 ? 0 : 120;
+            
+            document.getElementById('checkoutSummaryItemsCount').textContent = `${totalCount} item(s)`;
+            document.getElementById('checkoutSummaryTotal').textContent = `R ${(subtotal + shipping).toFixed(2)}`;
+
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        function cartHasAvailableStock() {
+            const unavailableItem = cart.find(cartItem => {
+                const product = products.find(item => item.id === cartItem.id);
+                return !product || cartItem.quantity > product.quantity;
+            });
+            if (!unavailableItem) return true;
+
+            showToast(`Stock changed for "${unavailableItem.name}". Update your cart before checkout.`, 'warning');
+            updateCartUI();
+            return false;
+        }
+
+        function handleProceedToConfirmation(e) {
+            e.preventDefault();
+            if (!cartHasAvailableStock()) {
+                closeCheckoutModal();
+                return;
+            }
+
+            const phone = document.getElementById('custPhone').value.trim();
+            // South Africa phone validation regex (+27 or 0XX format)
+            const rsaPhoneRegex = /^(\+27|0)[6-8][0-9]{8}$/;
+
+            const cleanPhone = phone.replace(/\s+/g, '');
+
+            if (!rsaPhoneRegex.test(cleanPhone)) {
+                showToast('Please enter a valid RSA phone number (e.g. +27 82 123 4567 or 0821234567)', 'warning');
+                return;
+            }
+
+            pendingCheckoutCustomer = {
+                firstName: document.getElementById('custFirstName').value.trim(),
+                surname: document.getElementById('custSurname').value.trim(),
+                phone: phone,
+                address: document.getElementById('custAddress').value.trim(),
+                city: document.getElementById('custCity').value.trim(),
+                postalCode: document.getElementById('custPostalCode').value.trim(),
+                province: document.getElementById('custProvince').value
+            };
+
+            closeCheckoutModal();
+
+            // Setup Receipt Data
+            const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+            const shipping = subtotal >= 1000 ? 0 : 120;
+            const grandTotal = subtotal + shipping;
+
+            document.getElementById('receiptRef').textContent = '#CP-' + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('receiptName').textContent = `${pendingCheckoutCustomer.firstName} ${pendingCheckoutCustomer.surname}`;
+            document.getElementById('receiptPhone').textContent = pendingCheckoutCustomer.phone;
+            document.getElementById('receiptAddress').textContent = `${pendingCheckoutCustomer.address}, ${pendingCheckoutCustomer.city}, ${pendingCheckoutCustomer.province}, ${pendingCheckoutCustomer.postalCode}`;
+            document.getElementById('receiptTotal').textContent = `R ${grandTotal.toFixed(2)}`;
+
+            document.getElementById('orderReceiptModal').classList.remove('hidden');
+        }
+
+        function finaliseOrderCompletion() {
+            if (!cartHasAvailableStock()) {
+                document.getElementById('orderReceiptModal').classList.add('hidden');
+                return;
+            }
+
+            // Deduct Stock Qty
+            cart.forEach(cItem => {
+                const target = products.find(p => p.id === cItem.id);
+                if (target) {
+                    target.quantity = Math.max(0, target.quantity - cItem.quantity);
+                }
+            });
+
+            saveProductsToStorage();
+            cart = [];
+            updateCartUI();
+            renderProducts();
+
+            document.getElementById('orderReceiptModal').classList.add('hidden');
+            showToast('Order successfully placed! Thank you.', 'success');
+        }
+
+        // --- ADMIN DASHBOARD (ADMIN001 / Admin01_Dash) ---
+        function openAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.remove('hidden');
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminUser').value.trim();
+            const p = document.getElementById('adminPass').value.trim();
+
+            if (u === 'Admin001' && p === 'Admin01_Dash') {
+                closeAdminLoginModal();
+                showToast('Admin Logged In Successfully', 'success');
+                openAdminDashboard();
+            } else {
+                showToast('Invalid Admin Credentials!', 'warning');
+            }
+        }
+
+        function openAdminDashboard() {
+            renderAdminDashboardTable();
+            document.getElementById('adminDashboardModal').classList.remove('hidden');
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById('adminDashboardModal').classList.add('hidden');
+        }
+
+        function renderAdminDashboardTable() {
+            const tbody = document.getElementById('adminProductTableBody');
+            
+            // Calculate Stats
+            const totalProducts = products.length;
+            const totalQty = products.reduce((sum, p) => sum + Number(p.quantity), 0);
+            const totalValue = products.reduce((sum, p) => sum + (Number(p.price) * Number(p.quantity)), 0);
+
+            document.getElementById('adminStatTotal').textContent = totalProducts;
+            document.getElementById('adminStatQty').textContent = totalQty;
+            document.getElementById('adminStatValue').textContent = `R ${totalValue.toFixed(2)}`;
+
+            tbody.innerHTML = products.map(product => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="px-5 py-3 font-semibold text-slate-900 flex items-center gap-3">
+                            <img src="${escapeHTML(safeImageUrl(product.image))}" alt="${escapeHTML(product.name)}" class="w-10 h-10 object-cover rounded-lg bg-slate-100">
+                        <div>
+                            <div>${escapeHTML(product.name)}</div>
+                            <div class="text-[11px] text-slate-400 font-normal">ID: #${product.id}</div>
+                        </div>
+                    </td>
+                    <td class="px-5 py-3 font-medium uppercase text-xs text-brand-600">${escapeHTML(product.category)}</td>
+                    <td class="px-5 py-3 font-bold text-slate-900">R ${Number(product.price).toFixed(2)}</td>
+                    <td class="px-5 py-3">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-extrabold ${product.quantity > 5 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                            ${product.quantity} in stock
+                        </span>
+                    </td>
+                    <td class="px-5 py-3 text-right">
+                        <button onclick="editProduct(${product.id})" class="text-brand-600 hover:text-brand-800 font-bold text-xs mr-3">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button onclick="deleteProduct(${product.id})" class="text-rose-500 hover:text-rose-700 font-bold text-xs">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // --- PRODUCT CRUD OPERATIONS ---
+        function openProductFormModal(editId = null) {
+            const modal = document.getElementById('productFormModal');
+            const form = document.getElementById('productForm');
+            const title = document.getElementById('productFormTitle');
+
+            form.reset();
+            selectedProductImage = null;
+            setProductImagePreview('');
+            document.getElementById('editProductId').value = '';
+
+            if (editId) {
+                const target = products.find(p => p.id === editId);
+                if (target) {
+                    title.textContent = 'Edit Product';
+                    document.getElementById('editProductId').value = target.id;
+                    document.getElementById('formProdName').value = target.name;
+                    document.getElementById('formProdPrice').value = target.price;
+                    document.getElementById('formProdQty').value = target.quantity;
+                    document.getElementById('formProdCategory').value = target.category || 'appliances';
+                    setProductImagePreview(target.image || '');
+                    document.getElementById('formProdDesc').value = target.description || '';
+                }
+            } else {
+                title.textContent = 'Add New Retail Product';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function setProductImagePreview(source, isObjectUrl = false) {
+            const preview = document.getElementById('formProdImagePreview');
+            if (productImagePreviewUrl) {
+                URL.revokeObjectURL(productImagePreviewUrl);
+                productImagePreviewUrl = null;
+            }
+
+            if (source) {
+                preview.src = isObjectUrl ? source : safeImageUrl(source);
+                productImagePreviewUrl = isObjectUrl ? source : null;
+                preview.classList.remove('hidden');
+            } else {
+                preview.removeAttribute('src');
+                preview.classList.add('hidden');
+            }
+        }
+
+        function handleProductImageSelection(event) {
+            const file = event.target.files[0];
+            selectedProductImage = file || null;
+            setProductImagePreview(file ? URL.createObjectURL(file) : '', Boolean(file));
+        }
+
+        function readImageAsDataUrl(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    if (typeof reader.result === 'string') resolve(reader.result);
+                    else reject(new Error('The selected image could not be read.'));
+                };
+                reader.onerror = () => reject(reader.error || new Error('The selected image could not be read.'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function closeProductFormModal() {
+            document.getElementById('productFormModal').classList.add('hidden');
+            selectedProductImage = null;
+            setProductImagePreview('');
+        }
+
+        async function handleSaveProduct(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('editProductId').value;
+            const name = document.getElementById('formProdName').value.trim();
+            const price = parseFloat(document.getElementById('formProdPrice').value);
+            const quantity = parseInt(document.getElementById('formProdQty').value);
+            const category = document.getElementById('formProdCategory').value;
+            const description = document.getElementById('formProdDesc').value.trim();
+
+            if (!name || !Number.isFinite(price) || price < 0 || !Number.isInteger(quantity) || quantity < 0) {
+                showToast('Enter a valid product name, non-negative price, and whole-number stock quantity.', 'warning');
+                return;
+            }
+
+            let image = editId ? products.find(product => product.id === Number(editId))?.image : '';
+            if (selectedProductImage) {
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+                if (!allowedTypes.includes(selectedProductImage.type)) {
+                    showToast('Choose a JPG, PNG, WebP, or GIF image.', 'warning');
+                    return;
+                }
+                if (selectedProductImage.size > 2 * 1024 * 1024) {
+                    showToast('Choose an image no larger than 2 MB.', 'warning');
+                    return;
+                }
+                try {
+                    image = await readImageAsDataUrl(selectedProductImage);
+                } catch (error) {
+                    showToast(error.message, 'warning');
+                    return;
+                }
+            }
+            image = image || 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80';
+
+            const previousProducts = products;
+            let successMessage;
+            if (editId) {
+                const productId = Number(editId);
+                if (products.some(product => product.id === productId)) {
+                    products = products.map(product => product.id === productId ? {
+                        ...product,
+                        name,
+                        price,
+                        quantity,
+                        category,
+                        image,
+                        description
+                    } : product);
+                    successMessage = 'Product updated successfully';
+                }
+            } else {
+                const newProd = {
+                    id: Date.now(),
+                    name,
+                    price,
+                    originalPrice: price * 1.15,
+                    quantity,
+                    category,
+                    image,
+                    description,
+                    rating: 5.0,
+                    reviews: 1,
+                    badge: "NEW ITEM",
+                    badgeColor: "bg-emerald-500"
+                };
+                products.unshift(newProd);
+                successMessage = 'New product added to store catalog';
+            }
+
+            try {
+                saveProductsToStorage();
+            } catch (error) {
+                products = previousProducts;
+                showToast('Could not save the product. Browser storage may be full; try a smaller image.', 'warning');
+                return;
+            }
+            showToast(successMessage, 'success');
+            renderProducts();
+            renderAdminDashboardTable();
+            closeProductFormModal();
+        }
+
+        document.getElementById('formProdImageFile').addEventListener('change', handleProductImageSelection);
+
+        function editProduct(id) {
+            openProductFormModal(id);
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                products = products.filter(p => p.id !== id);
+                saveProductsToStorage();
+                renderProducts();
+                renderAdminDashboardTable();
+                showToast('Product deleted', 'info');
+            }
+        }
+
+        // --- QUICK VIEW MODAL ---
+        function openQuickView(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.getElementById('quickViewModal');
+            const content = document.getElementById('quickViewContent');
+
+            content.innerHTML = `
+                <div class="aspect-square bg-slate-100 rounded-2xl overflow-hidden border border-slate-200">
+                    <img src="${escapeHTML(safeImageUrl(product.image))}" alt="${escapeHTML(product.name)}" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-brand-600 uppercase tracking-widest">${escapeHTML(product.category)}</span>
+                        <h2 class="text-xl font-extrabold text-slate-900 mt-1">${escapeHTML(product.name)}</h2>
+                        <div class="mt-3 flex items-baseline gap-3">
+                            <span class="text-2xl font-black text-slate-900">R ${Number(product.price).toFixed(2)}</span>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Stock Qty: ${product.quantity}</span>
+                        </div>
+                        <p class="text-slate-600 text-xs leading-relaxed mt-4">${escapeHTML(product.description || 'Quality retail product from CanteenPlus.')}</p>
+                    </div>
+                    <button onclick="addToCart(${product.id}); closeQuickView();" class="mt-6 w-full bg-slate-900 hover:bg-brand-600 text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cart-plus"></i> Add To Cart
+                    </button>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeQuickView() {
+            document.getElementById('quickViewModal').classList.add('hidden');
+        }
+
+        function toggleWishlist(id) {
+            const index = wishlist.indexOf(id);
+            if (index > -1) {
+                wishlist.splice(index, 1);
+                showToast('Removed from Wishlist', 'info');
+            } else {
+                wishlist.push(id);
+                showToast('Saved to Wishlist!', 'success');
+            }
+            const b = document.getElementById('wishlistBadge');
+            b.textContent = wishlist.length;
+            b.classList.toggle('hidden', wishlist.length === 0);
+            renderProducts();
+        }
+
+        // --- TOAST NOTIFICATIONS ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const icons = {
+                success: 'fa-circle-check text-emerald-500',
+                warning: 'fa-triangle-exclamation text-amber-500',
+                info: 'fa-circle-info text-brand-500'
+            };
+
+            toast.className = `pointer-events-auto bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 fade-in border border-slate-800 max-w-xs`;
+            const icon = document.createElement('i');
+            icon.className = `fa-solid ${icons[type] || icons.info} text-base`;
+            const text = document.createElement('span');
+            text.className = 'flex-1';
+            text.textContent = message;
+            toast.append(icon, text);
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
